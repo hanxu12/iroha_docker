@@ -13,21 +13,25 @@ RUN apt-get update \
     ninja-build \
     pkg-config \
     git \
-	ssh \
-	tar \
-	gzip \
+	  ssh \
+	  tar \
+	  gzip \
     ca-certificates \
     curl \
     zip \
     unzip \
     cmake \
-	python3-dev 
+	  vim \
+	  nano \
+	  python3-dev \
+	  python3
 
 WORKDIR /opt/
 RUN git clone -b master https://github.com/hyperledger/iroha --depth=1 \
 && iroha/vcpkg/build_iroha_deps.sh \
 && vcpkg/vcpkg integrate install 
 WORKDIR /opt/iroha/
+RUN sed -i '14 a find_package (Python3 COMPONENTS Interpreter Development)' CMakeLists.txt 
 RUN cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake -G "Ninja" 
 WORKDIR /opt/iroha/build
 RUN cmake --build . --target all -- -j8
