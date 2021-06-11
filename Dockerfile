@@ -29,4 +29,5 @@ RUN git clone -b master https://github.com/hyperledger/iroha --depth=1 \
 && vcpkg/vcpkg integrate install 
 WORKDIR /opt/iroha/
 RUN cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake -G "Ninja" 
+WORKDIR /opt/iroha/build
 RUN cmake --build . --target all -- -j8
