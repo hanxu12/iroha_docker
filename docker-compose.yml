@@ -1,38 +1,43 @@
 version: '3'
 
 services:
-    postgres:
-        image: postgres:10-alpine
-        networks:
-            - iroha-network        
-        ports: 
-            - "5432:5432"
-        environment:
-            - POSTGRES_USER=iroha
-            - POSTGRES_PASSWORD=mysecretpassword
-        command: -c 'max_prepared_transactions=100'
 
     node:
-        image: hyperledger/iroha:1.2.1
+        image: hyperledger/iroha:master
         ports:
             - "50051:50051"
         networks:
             - iroha-network
         environment: 
-            - IROHA_POSTGRES_HOST=postgres
+            - IROHA_POSTGRES_HOST=${COMPOSE_PROJECT_NAME}_postgres_1
             - IROHA_POSTGRES_PORT=5432
-            - IROHA_POSTGRES_USER=iroha
+            - IROHA_POSTGRES_USER=postgres
             - IROHA_POSTGRES_PASSWORD=mysecretpassword
             - KEY=node0
         depends_on:
-            - postgres 
+            - some-postgres
         tty: true
         volumes:
-            - ./iroha_data:/opt/iroha_data
+            - ./iroha/example:/opt/iroha_data
+            - blockstore:/tmp/block_store:delegated
         cap_add:
             - SYS_PTRACE
         security_opt: 
             - seccomp:unconfined
+        restart: unless-stopped      
+
+    some-postgres:
+        image: postgres:9.5-alpine
+        networks:
+            - iroha-network        
+        ports: 
+            - "5432:5432"
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=mysecretpassword            
         
 networks: 
     iroha-network: 
+
+volumes:
+    blockstore:
