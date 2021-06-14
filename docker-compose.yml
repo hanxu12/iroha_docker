@@ -3,7 +3,7 @@ version: '3'
 services:
 
     node:
-        image: hyperledger/iroha:master
+        image: hyperledger/iroha:1.2.0
         ports:
             - "50051:50051"
         networks:
