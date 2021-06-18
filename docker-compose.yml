@@ -1,43 +1,28 @@
 version: '3'
 
 services:
+  node:
+    image: hyperledger/iroha:1.2.1
+    ports:
+      - "50051:50051"
+    environment:
+      - IROHA_HOME=/opt/iroha
+      - IROHA_CONF=config.docker
+      - IROHA_NODEKEY=node1
+      - CCACHE_DIR=/tmp/ccache
+    volumes:
+      - ${PWD}/example:/opt/iroha/config
+      - ccache-data:/tmp/ccache
+    working_dir: /opt/iroha/config
+    entrypoint: /opt/iroha/config/entrypoint.sh
+    depends_on:
+      - postgres
 
-    node:
-        image: hyperledger/iroha:1.2.0
-        ports:
-            - "50051:50051"
-        networks:
-            - iroha-network
-        environment: 
-            - IROHA_POSTGRES_HOST=${COMPOSE_PROJECT_NAME}_postgres_1
-            - IROHA_POSTGRES_PORT=5432
-            - IROHA_POSTGRES_USER=postgres
-            - IROHA_POSTGRES_PASSWORD=mysecretpassword
-            - KEY=node0
-        depends_on:
-            - some-postgres
-        tty: true
-        volumes:
-            - ./iroha/example:/opt/iroha_data
-            - blockstore:/tmp/block_store:delegated
-        cap_add:
-            - SYS_PTRACE
-        security_opt: 
-            - seccomp:unconfined
-        restart: unless-stopped      
-
-    some-postgres:
-        image: postgres:9.5-alpine
-        networks:
-            - iroha-network        
-        ports: 
-            - "5432:5432"
-        environment:
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=mysecretpassword            
-        
-networks: 
-    iroha-network: 
+  postgres:
+    image: postgres:9.5-alpine
+    environment:
+      - POSTGRES_USER=iroha
+      - POSTGRES_PASSWORD=HelloW0rld
 
 volumes:
-    blockstore:
+  ccache-data:
