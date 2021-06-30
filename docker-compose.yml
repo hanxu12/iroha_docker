@@ -16,15 +16,9 @@ services:
             - KEY=node0
         depends_on:
             - some-postgres
-        tty: true
         volumes:
-            - ./iroha/example:/opt/iroha_data
-            - blockstore:/tmp/block_store:delegated
-        cap_add:
-            - SYS_PTRACE
-        security_opt: 
-            - seccomp:unconfined
-        restart: unless-stopped      
+            - ./example:/opt/iroha_data
+            - blockstore:/tmp/block_store:delegated    
 
     some-postgres:
         image: postgres:9.5-alpine
